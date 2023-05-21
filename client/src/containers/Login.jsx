@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 import { LoginBg, Logo } from '../assets';
 import { LoginInput } from '../components';
 import { FaEnvelope, FaLock, FcGoogle } from '../assets/icons';
 import { buttonClick } from '../animations';
 
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../config/firebase.config';
 import { validateUserJWTToken } from '../api';
 
@@ -18,6 +19,7 @@ const Login = () => {
 
     const firebaseAuth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    const navidate = useNavigate();
 
     const loginWithGoogle = async () => {
         try {
@@ -27,7 +29,8 @@ const Login = () => {
                         cred.getIdToken().then((token) => {
                             validateUserJWTToken(token).then(data => {
                                 console.log(data);
-                            })
+                            });
+                            navidate('/', { replace: true });
                         });
                     }
                 });
@@ -35,9 +38,58 @@ const Login = () => {
         } catch (error) {
             console.log(error.code);
             console.log(error.message);
-            // handle error here
         }
     }
+
+    const signUpWithEmailPass = async () => {
+        if (userEmail === "" || password === "" || confirmPassword === "") {
+            console.log("empty");
+        } else {
+            if (password === confirmPassword) {
+                setUserEmail("");
+                setPassword("");
+                setConfirmPassword("");
+                await createUserWithEmailAndPassword(firebaseAuth, userEmail, password).then((userCredential) => {
+                    firebaseAuth.onAuthStateChanged((cred) => {
+                        if (cred) {
+                            cred.getIdToken().then((token) => {
+                                validateUserJWTToken(token).then(data => {
+                                    console.log(data);
+                                })
+                                navidate('/', { replace: true });
+                            });
+                        }
+                    });
+                });
+            } else {
+
+            }
+        }
+    };
+
+    const signInWithEmailPass = async () => {
+        if (userEmail !== "" && password !== "") {
+            try {
+                await signInWithEmailAndPassword(firebaseAuth, userEmail, password).then((userCredential) => {
+                    firebaseAuth.onAuthStateChanged((cred) => {
+                        if (cred) {
+                            cred.getIdToken().then((token) => {
+                                validateUserJWTToken(token).then(data => {
+                                    console.log(data);
+                                });
+                                navidate('/', { replace: true });
+                            });
+                        }
+                    });
+                });
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage);
+            }
+
+        }
+    };
 
     return (
         <div className='w-screen h-screen relative overflow-hidden flex'>
@@ -120,6 +172,7 @@ const Login = () => {
                         <motion.button
                             {...buttonClick}
                             className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
+                            onClick={signInWithEmailPass}
                         >
                             Sign in
                         </motion.button>
@@ -128,6 +181,7 @@ const Login = () => {
                         <motion.button
                             {...buttonClick}
                             className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
+                            onClick={signUpWithEmailPass}
                         >
                             Sign up
                         </motion.button>
