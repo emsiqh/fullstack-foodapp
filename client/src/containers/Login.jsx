@@ -3,8 +3,12 @@ import { motion } from 'framer-motion';
 
 import { LoginBg, Logo } from '../assets';
 import { LoginInput } from '../components';
-import { FaEnvelope, FaLock } from '../assets/icons';
+import { FaEnvelope, FaLock, FcGoogle } from '../assets/icons';
 import { buttonClick } from '../animations';
+
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { app } from '../config/firebase.config';
+import { validateUserJWTToken } from '../api';
 
 const Login = () => {
     const [userEmail, setUserEmail] = useState("");
@@ -12,16 +16,39 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const firebaseAuth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginWithGoogle = async () => {
+        try {
+            await signInWithPopup(firebaseAuth, provider).then((userCredential) => {
+                firebaseAuth.onAuthStateChanged((cred) => {
+                    if (cred) {
+                        cred.getIdToken().then((token) => {
+                            validateUserJWTToken(token).then(data => {
+                                console.log(data);
+                            })
+                        });
+                    }
+                });
+            });
+        } catch (error) {
+            console.log(error.code);
+            console.log(error.message);
+            // handle error here
+        }
+    }
+
     return (
         <div className='w-screen h-screen relative overflow-hidden flex'>
             {/* Background image */}
             <img src={LoginBg} alt="" className='w-full h-full object-cover absolute top-0 left-0' />
 
             {/* Content box */}
-            <div className='flex flex-col items-center bg-cardOverlay w-[80%] md:w-[400px] h-full z-10 backdrop-blur-md p-4 px-4 py-12 gap-6'>
+            <div className='flex flex-col items-center bg-cardOverlay w-[80%] md:w-[400px] h-full z-10 backdrop-blur-md p-4 px-4 pt-8 gap-6'>
                 {/* Top logo section */}
                 <div className='flex items-center justify-start gap-4 w-full'>
-                    <img src={Logo} className='w-8' />
+                    <img src={Logo} className='w-8' alt='logo' />
                     <p className='text-headingColor font-semibold text-2xl'>City</p>
                 </div>
 
@@ -88,22 +115,46 @@ const Login = () => {
                 )}
 
                 {/* Button section */}
-                {!isSignUp ? (
-                    <motion.button
+                <div className='w-full px-4 py-2 md:px-12'>
+                    {!isSignUp ? (
+                        <motion.button
+                            {...buttonClick}
+                            className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
+                        >
+                            Sign in
+                        </motion.button>
+                    ) : (
+
+                        <motion.button
+                            {...buttonClick}
+                            className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
+                        >
+                            Sign up
+                        </motion.button>
+                    )}
+
+                    {/* white line */}
+                    <div className='flex items-center justify-between gap-8 py-6'>
+                        <div className='bg-white rounded-sm h-[1px] w-24'></div>
+                        <p className='text-white'>or</p>
+                        <div className='bg-white rounded-sm h-[1px] w-24'></div>
+                    </div>
+
+                    {/* google login btn */}
+                    <motion.div
                         {...buttonClick}
-                        className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
+                        className='bg-cardOverlay backdrop-blur-md rounded-3xl w-full px-4 py-2 flex items-center justify-center gap-4 cursor-pointer'
+                        onClick={loginWithGoogle}
                     >
-                        Sign in
-                    </motion.button>
-                ) : (
-                    <motion.button
-                        {...buttonClick}
-                        className='w-full rounded-md bg-red-400 px-4 py-2 cursor-pointer text-white text-xl capitalize hover:bg-red-500 transition-all duration-150'
-                    >
-                        Sign up
-                    </motion.button>
-                )
-                }
+                        <FcGoogle className='text-3xl' />
+                        <p className='capitalize text-base text-headingColor'>Sign in with Google</p>
+                    </motion.div>
+
+                </div>
+
+
+
+
             </div>
 
         </div>
