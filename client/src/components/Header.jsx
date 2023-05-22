@@ -1,15 +1,33 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAuth, signOut } from "firebase/auth";
 
 import { Avatar, Logo } from '../assets';
 import { isActiveStyle, isNotActiveStyle } from '../utils/style';
-import { buttonClick } from '../animations';
-import { MdShoppingCart } from '../assets/icons';
+import { buttonClick, slideTop } from '../animations';
+import { MdShoppingCart, MdLogout } from '../assets/icons';
+import { app } from '../config/firebase.config';
+import { setUserNull } from '../context/actions/userActions';
 
 const Header = () => {
     const user = useSelector((state) => state.user);
+    const [isMenu, setIsMenu] = useState(false);
+    const firebaseAuth = getAuth(app)
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const signOutt = async () => {
+        try {
+            await signOut(firebaseAuth).then(() => {
+                dispatch(setUserNull());
+                navigate('/login', { replace: true });
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <header className='fixed backdrop-blur-md z-50 inset-x-0 top-0 flex items-center justify-between px-12 md:px-20 py-6'>
@@ -34,13 +52,13 @@ const Header = () => {
                 >
                     <MdShoppingCart className='text-3xl text-textColor' />
                     <div className='w-5 h-5 rounded-full bg-red-500 flex items-center justify-center absolute -top-2 -right-1'>
-                        <p className='text-primary text-base font-semibold'>2</p>
+                        <p className='text-primary text-sm font-semibold'>2</p>
                     </div>
                 </motion.div>
                 {user ? (
                     <>
-                        <div className='relative cursor-pointer'>
-                            <div className='w-12 h-12 rounded-full shadow-md cursor-pointer overflow-hidden flex items-center justify-center'>
+                        <div className='relative cursor-pointer' onMouseEnter={() => setIsMenu(true)}>
+                            <div className='w-10 h-10 rounded-full shadow-md cursor-pointer overflow-hidden flex items-center justify-center'>
                                 <motion.img
                                     className='w-full h-full object-cover'
                                     src={user?.picture ? user?.picture : Avatar}
@@ -48,13 +66,44 @@ const Header = () => {
                                     referrerPolicy='no-referrer'
                                 />
                             </div>
+
+                            {/* Dropdown menu */}
+                            {isMenu && (
+                                <motion.div
+                                    {...slideTop}
+                                    className='px-6 py-4 w-44 bg-cardOverlay backdrop-blur-md rounded-md shadow-md absolute top-12 right-0 flex flex-col gap-3'
+                                    onMouseLeave={() => setIsMenu(false)}
+                                >
+                                    <Link
+                                        className='hover:text-red-500 text-lg text-textColor'
+                                        to={'/dashboard/home'}
+                                    >
+                                        Dashboard
+                                    </Link>
+                                    <Link
+                                        className='hover:text-red-500 text-lg text-textColor'
+                                        to={'/profile'}
+                                    >
+                                        My Profile
+                                    </Link>
+                                    <Link
+                                        className='hover:text-red-500 text-lg text-textColor'
+                                        to={'/user-orders'}
+                                    >
+                                        Orders
+                                    </Link>
+                                    <hr />
+                                    <motion.div
+                                        {...buttonClick}
+                                        onClick={signOutt}
+                                        className='shadow-md py-2 px-4 rounded-md bg-gray-100 flex items-center justify-start gap-3 hover:bg-gray-200 cursor-pointer'
+                                    >
+                                        <MdLogout className='text-xl text-textColor' />
+                                        <p className='text-lg text-textColor'>Sign out</p>
+                                    </motion.div>
+                                </motion.div>
+                            )}
                         </div>
-
-                        <motion.div
-                            className='px-6 py-4 bg-cardOverlay backdrop-blur-md rounded-md shadow-md absolute top-12 right-0 flex flex-col'
-                        >
-
-                        </motion.div>
                     </>
                 ) : (
                     <>
@@ -69,9 +118,6 @@ const Header = () => {
                     </>
                 )}
             </div>
-
-
-
         </header>
     )
 }

@@ -29,8 +29,9 @@ const Login = () => {
     const alert = useSelector((state) => state.alert);
 
     useEffect(() => {
-        // console.log('ok');
-        navigate('/', { replace: true });
+        if (user) {
+            navigate('/', { replace: true });
+        }
     }, [user]);
 
     const loginWithGoogle = async () => {
