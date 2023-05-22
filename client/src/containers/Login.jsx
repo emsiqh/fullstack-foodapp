@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 import { LoginBg, Logo } from '../assets';
 import { LoginInput } from '../components';
 import { FaEnvelope, FaLock, FcGoogle } from '../assets/icons';
 import { buttonClick } from '../animations';
-
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../config/firebase.config';
 import { validateUserJWTToken } from '../api';
+import { setUserDetails } from '../context/actions/userActions';
+import { alertInfo, alertWarning } from '../context/actions/alertActions';
 
 const Login = () => {
     const [userEmail, setUserEmail] = useState("");
@@ -19,7 +21,17 @@ const Login = () => {
 
     const firebaseAuth = getAuth(app);
     const provider = new GoogleAuthProvider();
-    const navidate = useNavigate();
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const user = useSelector((state) => state.user);
+    const alert = useSelector((state) => state.alert);
+
+    useEffect(() => {
+        // console.log('ok');
+        navigate('/', { replace: true });
+    }, [user]);
 
     const loginWithGoogle = async () => {
         try {
@@ -28,9 +40,9 @@ const Login = () => {
                     if (cred) {
                         cred.getIdToken().then((token) => {
                             validateUserJWTToken(token).then(data => {
-                                console.log(data);
+                                dispatch(setUserDetails(data));
                             });
-                            navidate('/', { replace: true });
+                            navigate('/', { replace: true });
                         });
                     }
                 });
@@ -43,7 +55,7 @@ const Login = () => {
 
     const signUpWithEmailPass = async () => {
         if (userEmail === "" || password === "" || confirmPassword === "") {
-            console.log("empty");
+            dispatch(alertInfo('Required fields should not be empty'));
         } else {
             if (password === confirmPassword) {
                 setUserEmail("");
@@ -54,15 +66,15 @@ const Login = () => {
                         if (cred) {
                             cred.getIdToken().then((token) => {
                                 validateUserJWTToken(token).then(data => {
-                                    console.log(data);
+                                    dispatch(setUserDetails(data));
                                 })
-                                navidate('/', { replace: true });
+                                navigate('/', { replace: true });
                             });
                         }
                     });
                 });
             } else {
-
+                dispatch(alertWarning('Passwords do not match'));
             }
         }
     };
@@ -75,9 +87,9 @@ const Login = () => {
                         if (cred) {
                             cred.getIdToken().then((token) => {
                                 validateUserJWTToken(token).then(data => {
-                                    console.log(data);
+                                    dispatch(setUserDetails(data));
                                 });
-                                navidate('/', { replace: true });
+                                navigate('/', { replace: true });
                             });
                         }
                     });
@@ -88,6 +100,8 @@ const Login = () => {
                 console.log(errorCode, errorMessage);
             }
 
+        } else {
+            dispatch(alertWarning('Please enter email and password'))
         }
     };
 
