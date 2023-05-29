@@ -7,9 +7,10 @@ import { motion } from "framer-motion";
 import { Main, Login, Dashboard } from "./containers";
 import { app } from "./config/firebase.config";
 import { setUserDetails } from "./context/actions/userActions";
-import { validateUserJWTToken } from "./api";
+import { getAllCartItems, validateUserJWTToken } from "./api";
 import { fadeInOut } from "./animations";
 import { Alert, MainLoader } from "./components";
+import { setCartItems } from "./context/actions/cartActions";
 
 function App() {
   const firebaseAuth = getAuth(app);
@@ -24,6 +25,11 @@ function App() {
       if (cred) {
         cred.getIdToken().then((token) => {
           validateUserJWTToken(token).then(data => {
+            if (data) {
+              getAllCartItems(data.user_id).then((items) => {
+                dispatch(setCartItems(items));
+              });
+            }
             dispatch(setUserDetails(data));
           });
         });

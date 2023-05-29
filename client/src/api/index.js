@@ -52,4 +52,24 @@ export const getAllUsers = async () => {
     } catch (error) {
         return null;
     }
-}
+};
+
+// add new item to the cart
+export const addNewItemToCart = async (userId, data) => {
+    try {
+        const res = await axios.post(`${baseUrl}/api/products/addToCart/${userId}`, { ...data });
+        return res.data.data;
+    } catch (err) {
+        throw new Error(`Failed to add item to cart: ${err.message}`);
+    }
+};
+
+// get all items in the cart of the user
+export const getAllCartItems = async (user_id) => {
+    try {
+        const res = await axios.get(`${baseUrl}/api/products/getCartItems/${user_id}`);
+        return res.data.data;
+    } catch (err) {
+        throw new Error(`Failed to get items: ${err.message}`);
+    }
+};

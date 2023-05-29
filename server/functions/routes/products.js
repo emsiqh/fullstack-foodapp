@@ -44,4 +44,49 @@ router.delete('/delete/:productId', async (req, res) => {
     }
 });
 
+// create a cart
+router.post("/addToCart/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    const productId = req.body.productId;
+    const itemRef = db.collection("cartItems").doc(`/${userId}/`).collection("items").doc(`/${productId}/`);
+    try {
+        const doc = await itemRef.get();
+        const data = {
+            productId: productId,
+            product_name: req.body.product_name,
+            product_category: req.body.product_category,
+            product_price: req.body.product_price,
+            imageURL: req.body.imageURL,
+            quantity: 1,
+        };
+        if (doc.exists) {
+            const quantity = doc.data().quantity + 1;
+            const batch = db.batch();
+            batch.update(itemRef, { quantity });
+            await batch.commit();
+            return res.status(200).send({ success: true, data: { ...data, quantity } });
+        } else {
+            const batch = db.batch();
+            batch.set(itemRef, data);
+            await batch.commit();
+            return res.status(200).send({ success: true, data: data });
+        }
+    } catch (err) {
+        return res.send({ success: false, msg: `Error :${err} ` });
+    }
+});
+
+// get all the cartitems for that user
+router.get("/getCartItems/:user_id", async (req, res) => {
+    const userId = req.params.user_id;
+    try {
+        const query = db.collection("cartItems").doc(`/${userId}/`).collection("items");
+        const querySnapshot = await query.get();
+        const response = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+        return res.status(200).send({ success: true, data: response });
+    } catch (err) {
+        throw new Error(`Failed to get cart items: ${err.message}`);
+    }
+});
+
 module.exports = router;
