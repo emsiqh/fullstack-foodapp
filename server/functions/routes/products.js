@@ -76,6 +76,41 @@ router.post("/addToCart/:userId", async (req, res) => {
     }
 });
 
+// update cart to increse or decrement
+router.post('/updateCart/:user_id', async (req, res) => {
+    const userId = req.params.user_id;
+    const productId = req.query.productId;
+    const type = req.query.type;
+    const itemRef = db.collection("cartItems").doc(`${userId}`).collection("items").doc(`${productId}`);
+
+    try {
+        const doc = await itemRef.get();
+        if (!doc.exists) {
+            return res.status(404).send({ success: false, msg: "Item not found in cart" });
+        }
+
+        const quantity = doc.data().quantity;
+        const batch = db.batch();
+
+        if (type === 'increment') {
+            batch.update(itemRef, { quantity: quantity + 1 });
+        } else if (type === 'decrement' && quantity === 1) {
+            batch.delete(itemRef);
+        } else if (type === 'decrement' && quantity > 1) {
+            batch.update(itemRef, { quantity: quantity - 1 });
+        } else {
+            return res.status(400).send({ success: false, msg: "Invalid request" });
+        }
+
+        await batch.commit();
+        const updatedDoc = await itemRef.get();
+        const data = updatedDoc.data();
+        return res.status(200).send({ success: true, data });
+    } catch (err) {
+        throw Error(`Failed to update cart: ${err.message}`);
+    }
+});
+
 // get all the cartitems for that user
 router.get("/getCartItems/:user_id", async (req, res) => {
     const userId = req.params.user_id;

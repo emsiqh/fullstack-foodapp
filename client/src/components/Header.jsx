@@ -10,6 +10,7 @@ import { buttonClick, slideTop } from '../animations';
 import { MdShoppingCart, MdLogout } from '../assets/icons';
 import { app } from '../config/firebase.config';
 import { setUserNull } from '../context/actions/userActions';
+import { setCartOn } from '../context/actions/displayCartActions';
 
 const Header = () => {
     const user = useSelector((state) => state.user);
@@ -51,9 +52,10 @@ const Header = () => {
                 <motion.div
                     {...buttonClick}
                     className='relative cursor-pointer'
+                    onClick={() => dispatch(setCartOn())}
                 >
                     <MdShoppingCart className='text-3xl text-textColor' />
-                    {cart.length > 0 && (
+                    {cart?.length > 0 && (
                         <div className='w-5 h-5 rounded-full bg-red-500 flex items-center justify-center absolute -top-2 -right-1'>
                             <p className='text-primary text-sm font-semibold'>{cart?.length}</p>
                         </div>
