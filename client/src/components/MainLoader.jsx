@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/Loader.css';
+import '../assets/css/Loader.css';
 
 const MainLoader = () => {
     return (
