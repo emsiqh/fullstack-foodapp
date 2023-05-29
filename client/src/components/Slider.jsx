@@ -18,7 +18,7 @@ const Slider = () => {
     }, [products]);
 
     return (
-        <div className="w-full pt-24">
+        <div className="w-full pt-16">
             <Swiper
                 slidesPerView={3}
                 centeredSlides={false}
