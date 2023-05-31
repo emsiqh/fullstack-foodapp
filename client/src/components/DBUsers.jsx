@@ -28,6 +28,9 @@ const DBUsers = () => {
                 {
                     title: 'Name',
                     field: 'displayName',
+                    render: (rowData) => (
+                        <p>{rowData.displayName ? rowData.displayName : rowData.email}</p>
+                    )
                 },
                 {
                     title: 'Verified',
