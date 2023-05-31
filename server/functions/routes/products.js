@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const admin = require('firebase-admin');
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true });
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 router.post('/create', async (req, res) => {
     try {
@@ -122,6 +124,64 @@ router.get("/getCartItems/:user_id", async (req, res) => {
     } catch (err) {
         throw new Error(`Failed to get cart items: ${err.message}`);
     }
+});
+
+// stripe
+router.post('/create-checkout-session', async (req, res) => {
+    const line_items = req.body.data.cart.map((item) => {
+        return {
+            price_data: {
+                currency: 'usd',
+                product_data: {
+                    name: item.product_name,
+                    images: [item.imageURL],
+                    metadata: {
+                        id: item.productId,
+                    }
+                },
+                unit_amount: item.product_price * 100,
+            },
+            quantity: item.quantity,
+        }
+    });
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        shipping_address_collection: {
+            allowed_countries: ['US', 'VN'],
+        },
+        shipping_options: [
+            {
+                shipping_rate_data: {
+                    type: 'fixed_amount',
+                    fixed_amount: {
+                        amount: 0,
+                        currency: 'usd',
+                    },
+                    display_name: 'Free shipping',
+                    delivery_estimate: {
+                        minimum: {
+                            unit: 'hour',
+                            value: 5,
+                        },
+                        maximum: {
+                            unit: 'hour',
+                            value: 7,
+                        },
+                    },
+                },
+            },
+        ],
+        phone_number_collection: {
+            enabled: true,
+        },
+        line_items,
+        mode: 'payment',
+        success_url: `${process.env.CLIENT_URL}/checkout-success`,
+        cancel_url: `${process.env.CLIENT_URL}/checkout-success`,
+    });
+
+    res.send({ url: session.url });
 });
 
 module.exports = router;

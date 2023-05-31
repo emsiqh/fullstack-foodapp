@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 import { buttonClick, slideIn, staggerFadeInOut } from '../animations';
 import { setCartOff } from '../context/actions/displayCartActions';
 import { BiChevronRight, FcClearFilters, HiCurrencyDollar } from '../assets/icons';
 import { alertNull, alertSuccess } from '../context/actions/alertActions';
 import { setCartItems } from '../context/actions/cartActions';
-import { getAllCartItems, increaseItemQuantity } from '../api';
+import { baseUrl, getAllCartItems, increaseItemQuantity } from '../api';
+import EmptyCart from "../assets/img/emptyCart.svg";
 
 const Cart = () => {
     const dispatch = useDispatch();
     const cart = useSelector((state) => state.cart);
+    const user = useSelector((state) => state.user);
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
@@ -21,6 +24,18 @@ const Cart = () => {
             setTotal(tot);
         }
     }, [cart]);
+
+    const handleCheckout = () => {
+        const data = {
+            user: user,
+            cart: cart,
+            total: total,
+        };
+
+        axios.post(`${baseUrl}/api/products/create-checkout-session`, { data }).then((res) => {
+            window.location.href = res.data.url;
+        }).catch((err) => console.log(err));
+    };
 
     return (
         <motion.div
@@ -51,7 +66,7 @@ const Cart = () => {
                         ))}
                     </div>
 
-                    <div className=" bg-zinc-800 rounded-t-[60px] w-full h-[45%] flex flex-col items-center justify-center px-4 py-6 gap-24">
+                    <div className=" bg-zinc-800 rounded-t-[60px] w-full h-[30%] flex flex-col items-center justify-center px-4 py-6 gap-2">
                         <div className="w-full flex items-center justify-evenly">
                             <p className="text-3xl text-zinc-500 font-semibold">Total</p>
                             <p className="text-3xl text-orange-500 font-semibold flex items-center justify-center gap-1">
@@ -59,9 +74,36 @@ const Cart = () => {
                                 {total}
                             </p>
                         </div>
-                    </div>
-                </> : <></>
 
+                        {/* Button checkout */}
+                        {user ? (
+                            <motion.button
+                                onClick={handleCheckout}
+                                {...buttonClick}
+                                type="button"
+                                className="w-full p-2 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-gray-50 text-lg my-2 hover:shadow-lg"
+                            >
+                                Check Out
+                            </motion.button>
+                        ) : (
+                            <motion.button
+                                {...buttonClick}
+                                type="button"
+                                className="w-full p-2 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-gray-50 text-lg my-2 hover:shadow-lg"
+                            >
+                                Login to check out
+                            </motion.button>
+                        )}
+                    </div>
+                </> :
+                    (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+                            <img src={EmptyCart} className="w-300" alt="" />
+                            <p className="text-xl text-textColor font-semibold">
+                                Add some items to your cart
+                            </p>
+                        </div>
+                    )
                 }
             </div>
         </motion.div>

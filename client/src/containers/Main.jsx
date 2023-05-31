@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Header from '../components/Header';
-import { Cart, FilterSection, Home, HomeSlider } from '../components';
+import { Cart, FilterSection, Home, HomeSlider, Header } from '../components';
 import { setAllProducts } from '../context/actions/productActions';
 import { getAllProducts } from '../api';
 

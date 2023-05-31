@@ -1,6 +1,7 @@
 export { default as LoginInput } from './LoginInput';
 export { default as MainLoader } from './MainLoader';
 export { default as Alert } from './Alert';
+export { default as Header } from './Header';
 export { default as DBLeft } from './DBLeft';
 export { default as DBRight } from './DBRight';
 export { default as DBHeader } from './DBHeader';
@@ -17,3 +18,4 @@ export { default as Slider } from './Slider';
 export { default as SliderCard } from './SliderCard';
 export { default as FilterSection } from './FilterSection';
 export { default as Cart } from './Cart';
+export { default as CheckOutSuccess } from './CheckOutSuccess';
