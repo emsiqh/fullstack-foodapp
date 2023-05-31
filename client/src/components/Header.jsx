@@ -80,12 +80,15 @@ const Header = () => {
                                     className='px-6 py-4 w-44 bg-cardOverlay backdrop-blur-md rounded-md shadow-md absolute top-12 right-0 flex flex-col gap-3'
                                     onMouseLeave={() => setIsMenu(false)}
                                 >
-                                    <Link
-                                        className='hover:text-red-500 text-lg text-textColor'
-                                        to={'/dashboard/home'}
-                                    >
-                                        Dashboard
-                                    </Link>
+                                    {user?.user_id === process.env.REACT_APP_ADMIN_ID && (
+                                        <Link
+                                            className='hover:text-red-500 text-lg text-textColor'
+                                            to={'/dashboard/home'}
+                                        >
+                                            Dashboard
+                                        </Link>
+                                    )}
+
                                     <Link
                                         className='hover:text-red-500 text-lg text-textColor'
                                         to={'/profile'}
