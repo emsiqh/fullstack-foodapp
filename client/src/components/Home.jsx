@@ -18,6 +18,7 @@ const Home = () => {
                 </div>
                 <p className="text-[40px] text-headingColor md:text-[72px] font-sans font-extrabold">
                     The Fastest Delivery in{" "}
+                    <br />
                     <span className="text-orange-600">Your City</span>
                 </p>
                 <p className="text-textColor text-lg">

@@ -31,6 +31,7 @@ const DBHome = () => {
     const curry = products?.filter((item) => item.product_category === 'curry');
     const chinese = products?.filter((item) => item.product_category === 'chinese');
     const bread = products?.filter((item) => item.product_category === 'bread');
+    const cream = products?.filter((item) => item.product_category === 'icecream');
 
     return (
         <div className='flex items-center justify-center pt-6 w-full h-full'>
@@ -40,7 +41,7 @@ const DBHome = () => {
                         <CChart
                             type="bar"
                             data={{
-                                labels: ['Drinks', 'Deserts', 'Fruits', 'Rice', 'Curry', 'Chinese', 'Bread'],
+                                labels: ['Drinks', 'Deserts', 'Fruits', 'Rice', 'Curry', 'Chinese', 'Bread', 'Ice Cream'],
                                 datasets: [
                                     {
                                         label: 'Category wise count',
@@ -53,6 +54,7 @@ const DBHome = () => {
                                             curry?.length,
                                             chinese?.length,
                                             bread?.length,
+                                            cream?.length,
                                         ],
                                     },
                                 ],

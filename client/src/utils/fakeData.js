@@ -6,6 +6,7 @@ export const categories = [
     { id: 5, title: 'Curry', category: 'curry' },
     { id: 6, title: 'Chinese', category: 'chinese' },
     { id: 7, title: 'Bread', category: 'bread' },
+    { id: 8, title: 'Ice Cream', category: 'icecream' },
 ];
 
 export const randomData = [
