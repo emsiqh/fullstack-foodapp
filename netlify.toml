@@ -1,0 +1,25 @@
+[build]
+  # Chuyển đến thư mục client và build bằng Yarn
+  command = "cd client && yarn install && yarn build"
+  # Đưa file build của client lên production
+  publish = "client/build"
+  # Chuyển đến thư mục server và build bằng Firebase tools
+  functions = "server"
+  # Không cần cài đặt Firebase tools
+  # environment = { 
+  #   FIREEBASE_INSTALL_COMMAND = "npm install -g firebase-tools"
+  # }
+
+[build.environment]
+  FIREBASE_CONFIG = '{
+  apiKey: "AIzaSyDgRH5fpKVKvh0ieL3US54IxQCLxfWjsIY",
+  authDomain: "fullstack-app-may-18-reactjs.firebaseapp.com",
+  projectId: "fullstack-app-may-18-reactjs",
+  storageBucket: "fullstack-app-may-18-reactjs.appspot.com",
+  messagingSenderId: "51397300031",
+  appId: "1:51397300031:web:2c4e51936a8913a0348d8a"
+}'
+  
+[build.functions]
+  # Chỉ deploy Firebase functions
+  command = "firebase deploy --only functions"
