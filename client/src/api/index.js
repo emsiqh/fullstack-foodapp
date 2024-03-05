@@ -27,8 +27,14 @@ export const addNewProduct = async (data) => {
 export const getAllProducts = async () => {
     try {
         const res = await axios.get(`${baseUrl}/api/products/all`);
-        return res.data.data;
+        const allItems = res.data.data;
+        allItems.sort((a, b) => a.product_name
+            .localeCompare(b.product_name
+            ));
+        console.log(allItems);
+        return allItems;
     } catch (error) {
+        console.error("Failed to get products:", error);
         return null;
     }
 };
@@ -68,7 +74,11 @@ export const addNewItemToCart = async (userId, data) => {
 export const getAllCartItems = async (user_id) => {
     try {
         const res = await axios.get(`${baseUrl}/api/products/getCartItems/${user_id}`);
-        return res.data.data;
+        const cartItems = res.data.data;
+        cartItems.sort((a, b) => a.product_name
+            .localeCompare(b.product_name
+            ));
+        return cartItems;
     } catch (err) {
         throw new Error(`Failed to get items: ${err.message}`);
     }
@@ -84,3 +94,13 @@ export const increaseItemQuantity = async (user_id, productId, type) => {
         return null;
     }
 };
+
+// empty the cart
+export const emptyCart = async (user_id) => {
+    try {
+        const res = await axios.delete(`${baseUrl}/api/products/emptyCart/${user_id}`);
+        return res;
+    } catch (error) {
+        throw new Error(`Failed to empty the cart: ${error.message}`);
+    }
+}

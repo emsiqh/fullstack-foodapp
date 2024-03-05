@@ -7,8 +7,8 @@ import { buttonClick, slideIn, staggerFadeInOut } from '../animations';
 import { setCartOff } from '../context/actions/displayCartActions';
 import { BiChevronRight, FcClearFilters, HiCurrencyDollar } from '../assets/icons';
 import { alertNull, alertSuccess } from '../context/actions/alertActions';
-import { setCartItems } from '../context/actions/cartActions';
-import { baseUrl, getAllCartItems, increaseItemQuantity } from '../api';
+import { setCartItems, clearCartItems } from '../context/actions/cartActions';
+import { baseUrl, getAllCartItems, increaseItemQuantity, emptyCart } from '../api';
 import EmptyCart from "../assets/img/emptyCart.svg";
 
 const Cart = () => {
@@ -37,6 +37,20 @@ const Cart = () => {
         }).catch((err) => console.log(err));
     };
 
+    const removeCart = async () => {
+        dispatch(clearCartItems());
+        console.log('ok');
+        dispatch(alertSuccess("Removed the cart item"));
+        try {
+            await emptyCart(user?.user_id);
+            // const items = await getAllCartItems(user?.user_id);
+            // dispatch(setCartItems(items));
+            dispatch(alertNull());
+        } catch (error) {
+            console.error("Failed to remove cart items:", error);
+        }
+    };
+
     return (
         <motion.div
             {...slideIn}
@@ -54,6 +68,7 @@ const Cart = () => {
                 <motion.i
                     {...buttonClick}
                     className='cursor-pointer'
+                    onClick={() => removeCart()}
                 >
                     <FcClearFilters className='text-[30px] text-textColor' />
                 </motion.i>

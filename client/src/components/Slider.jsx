@@ -14,7 +14,7 @@ const Slider = () => {
     const [fruits, setFruits] = useState(null);
     useEffect(() => {
         setFruits(products?.filter((data) => data.product_category === "fruits"));
-        console.log(fruits);
+        // console.log(fruits);
     }, [products]);
 
     return (

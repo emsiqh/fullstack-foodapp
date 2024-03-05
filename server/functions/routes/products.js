@@ -78,6 +78,23 @@ router.post("/addToCart/:userId", async (req, res) => {
     }
 });
 
+// empty the cart
+router.delete('/emptyCart/:user_id', async (req, res) => {
+    const userId = req.params.user_id;
+    const cartRef = db.collection('cartItems').doc(`${userId}`).collection('items');
+    try {
+        const querySnapshot = await cartRef.get();
+        const batch = db.batch();
+        querySnapshot.forEach((doc) => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+        return res.status(200).send({ success: true, msg: 'Successfully empty the cart' });
+    } catch (error) {
+        return res.status(500).send({ success: false, msg: `Error emptying cart: ${error.message}` });
+    }
+});
+
 // update cart to increse or decrement
 router.post('/updateCart/:user_id', async (req, res) => {
     const userId = req.params.user_id;
