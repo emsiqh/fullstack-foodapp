@@ -6,7 +6,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPas
 
 import { LoginBg, Logo } from '../assets';
 import { LoginInput } from '../components';
-import { FaEnvelope, FaLock, FcGoogle } from '../assets/icons';
+import { FaEnvelope, FaLock, FcGoogle, FaRunning } from '../assets/icons';
 import { buttonClick } from '../animations';
 import { app } from '../config/firebase.config';
 import { validateUserJWTToken } from '../api';
@@ -28,9 +28,13 @@ const Login = () => {
     const user = useSelector((state) => state.user);
     const alert = useSelector((state) => state.alert);
 
+    const handleClick = () => {
+        navigate('/home');
+    };
+
     useEffect(() => {
         if (user) {
-            navigate('/', { replace: true });
+            navigate('/home', { replace: true });
         }
     }, [user]);
 
@@ -43,7 +47,7 @@ const Login = () => {
                             validateUserJWTToken(token).then(data => {
                                 dispatch(setUserDetails(data));
                             });
-                            navigate('/', { replace: true });
+                            navigate('/home', { replace: true });
                         });
                     }
                 });
@@ -69,7 +73,7 @@ const Login = () => {
                                 validateUserJWTToken(token).then(data => {
                                     dispatch(setUserDetails(data));
                                 })
-                                navigate('/', { replace: true });
+                                navigate('/home', { replace: true });
                             });
                         }
                     });
@@ -90,7 +94,7 @@ const Login = () => {
                                 validateUserJWTToken(token).then(data => {
                                     dispatch(setUserDetails(data));
                                 });
-                                navigate('/', { replace: true });
+                                navigate('/home', { replace: true });
                             });
                         }
                     });
@@ -212,20 +216,24 @@ const Login = () => {
                     {/* google login btn */}
                     <motion.div
                         {...buttonClick}
-                        className='bg-cardOverlay backdrop-blur-md rounded-3xl w-full px-4 py-2 flex items-center justify-center gap-4 cursor-pointer'
+                        className='bg-cardOverlay backdrop-blur-md rounded-3xl w-full px-4 py-2 flex items-center justify-center gap-4 cursor-pointer mb-4'
                         onClick={loginWithGoogle}
                     >
                         <FcGoogle className='text-3xl' />
                         <p className='capitalize text-base text-headingColor'>Sign in with Google</p>
                     </motion.div>
 
+                    {/* Go as guest */}
+                    <motion.div
+                        {...buttonClick}
+                        className='bg-cardOverlay backdrop-blur-md rounded-3xl w-full px-4 py-2 flex items-center justify-center gap-4 cursor-pointer'
+                        onClick={handleClick}
+                    >
+                        <FaRunning className='text-3xl' />
+                        <p className='capitalize text-base text-headingColor'>I'm just a Visitor</p>
+                    </motion.div>
                 </div>
-
-
-
-
             </div>
-
         </div>
     )
 }

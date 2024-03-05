@@ -4,6 +4,7 @@ import {
     FaCloudUploadAlt,
     FaCheck,
     FaArrowLeft,
+    FaRunning
 } from "react-icons/fa";
 import { FcGoogle, FcClearFilters } from "react-icons/fc";
 import { MdShoppingCart, MdLogout, MdSearch, MdDelete } from "react-icons/md";
@@ -31,4 +32,5 @@ export {
     IoBasket,
     BiChevronRight,
     HiCurrencyDollar,
+    FaRunning,
 };
