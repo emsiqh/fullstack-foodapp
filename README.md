@@ -4,7 +4,7 @@
 
 ## 1. Description
 
-- A full stack food delivery application using Reactjs, Firebase as Backend. This project focus on practicing react, redux, hooks and folder structure of a react app with detail instruction from vetrivel ravi (https://www.youtube.com/@VetrivelRavi) on youtube.
+- A full stack food delivery application using Reactjs, Firebase as Backend. This project focus on practicing react, redux, hooks and folder structure of a react app.
 
 ## 2. Installation and usage
 
@@ -48,3 +48,6 @@
 ### 6. Checkout with Stripe
 
 ![p7](screenshots/checkout.png)
+
+### 7. Design
+- Ưith detail instruction from vetrivel ravi (https://www.youtube.com/@VetrivelRavi) on youtube.
