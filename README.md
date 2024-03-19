@@ -50,4 +50,4 @@
 ![p7](screenshots/checkout.png)
 
 ### 7. Design
-- Ưith detail instruction from vetrivel ravi (https://www.youtube.com/@VetrivelRavi) on youtube.
+- With detail instruction from vetrivel ravi (https://www.youtube.com/@VetrivelRavi) on youtube.
